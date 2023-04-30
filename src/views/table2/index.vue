@@ -8,35 +8,48 @@
       fit
       highlight-current-row
     >
-      <el-table-column align="center" label="ID" width="95">
-        <template slot-scope="scope">
-          {{ scope.$index }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{ scope.row.title }}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      <el-table-column label="词条标题" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Pageviews" width="110" align="center">
+      <el-table-column label="词条类型" align="center">
         <template slot-scope="scope">
-          {{ scope.row.pageviews }}
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column class-name="status-col" label="Status" width="110" align="center">
+      <el-table-column label="提交人" align="center">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status | statusFilter">{{ scope.row.status }}</el-tag>
+          <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
+      <el-table-column align="center" prop="created_at" label="提交时间" width="200px">
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.display_time }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="审核结果" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.author }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="审核人" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.author }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="created_at" label="审核时间" width="200px">
+        <template slot-scope="scope">
+          <i class="el-icon-time" />
+          <span>{{ scope.row.display_time }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" prop="created_at" label="操作">
+        <template slot-scope="scope">
+          <span class="operation" @click="pass(scope.row)">通过</span>
+          <span class="operation" @click="reject(scope.row)">拒绝</span>
+          <!-- <span @click="detail(scope.row)">详情</span> -->
         </template>
       </el-table-column>
     </el-table>
@@ -77,3 +90,11 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.operation{
+  color: blue;
+  cursor: pointer;
+  margin-right: 8px;
+}
+</style>

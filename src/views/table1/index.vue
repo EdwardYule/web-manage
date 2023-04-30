@@ -47,14 +47,21 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="操作">
         <template slot-scope="scope">
-          <span class="operation" @click="pass(scope.row)">通过</span>
-          <span class="operation" @click="reject(scope.row)">拒绝</span>
+          <span class="operation" @click="audit(scope.row)">审核</span>
           <!-- <span @click="detail(scope.row)">详情</span> -->
         </template>
       </el-table-column>
     </el-table>
     <el-dialog :visible.sync="visible" title="词条审核">
-      sdlfkj
+      <el-form :model="form">
+        <el-form-item label="拒绝原因">
+          <el-input v-model="form.reason" />
+        </el-form-item>
+      </el-form>
+      <div class="footer">
+        <el-button type="primary" @click="pass">通过</el-button>
+        <el-button @click="reject">拒绝</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -77,13 +84,25 @@ export default {
     return {
       list: null,
       listLoading: true,
-      visible: false
+      visible: false,
+      form: {
+        reason: ''
+      }
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    audit() {
+      this.visible = true
+    },
+    pass(){
+      this.visible = false;
+    },
+    reject(){
+      this.visible = false;
+    },
     fetchData() {
       this.listLoading = true
       getList().then(response => {

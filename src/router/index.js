@@ -51,7 +51,7 @@ export const constantRoutes = [
         path: 'table1',
         name: 'Table',
         component: () => import('@/views/table1/index'),
-        meta: { title: '报酬管理', icon: 'el-icon-medal' }
+        meta: { title: '词条审核', icon: 'el-icon-medal' }
       }
     ]
   },
@@ -64,7 +64,7 @@ export const constantRoutes = [
         path: 'table2',
         name: 'Table',
         component: () => import('@/views/table2/index'),
-        meta: { title: '词条审核', icon: 'table' }
+        meta: { title: '报酬管理', icon: 'table' }
       }
     ]
   },
