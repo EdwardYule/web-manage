@@ -7,6 +7,7 @@
       border
       fit
       highlight-current-row
+      height="600px"
     >
       <el-table-column label="词条标题" align="center">
         <template slot-scope="scope">
@@ -52,6 +53,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="footer">
+      <el-pagination
+        :current-page="currentPage4"
+        :page-sizes="[100, 200, 300, 400]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
     <el-dialog :visible.sync="visible" title="词条审核">
       <el-form :model="form">
         <el-form-item label="拒绝原因">
@@ -87,21 +99,28 @@ export default {
       visible: false,
       form: {
         reason: ''
-      }
+      },
+      currentPage4: 4
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`)
+    },
     audit() {
       this.visible = true
     },
-    pass(){
-      this.visible = false;
+    pass() {
+      this.visible = false
     },
-    reject(){
-      this.visible = false;
+    reject() {
+      this.visible = false
     },
     fetchData() {
       this.listLoading = true
@@ -119,5 +138,9 @@ export default {
   color: blue;
   cursor: pointer;
   margin-right: 8px;
+}
+.footer{
+  text-align: right;
+  margin-top: 16px;
 }
 </style>
