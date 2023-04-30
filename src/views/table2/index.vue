@@ -48,7 +48,7 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="操作">
         <template slot-scope="scope">
-          <span class="operation" @click="pass(scope.row)">发放</span>
+          <span class="operation" @click="issue(scope.row)">发放</span>
         </template>
       </el-table-column>
     </el-table>
@@ -63,6 +63,17 @@
         @current-change="handleCurrentChange"
       />
     </div>
+    <el-dialog :visible.sync="visible" title="奖励发放">
+      <el-form :model="form">
+        <el-form-item label="口令红包">
+          <el-input v-model="form.content" />
+        </el-form-item>
+      </el-form>
+      <div class="footer">
+        <el-button type="primary" @click="confirm">确认</el-button>
+        <el-button @click="cancel">取消</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -70,21 +81,15 @@
 import { getList } from '@/api/table'
 
 export default {
-  filters: {
-    statusFilter(status) {
-      const statusMap = {
-        published: 'success',
-        draft: 'gray',
-        deleted: 'danger'
-      }
-      return statusMap[status]
-    }
-  },
   data() {
     return {
       list: null,
       listLoading: true,
-      currentPage4: 4
+      currentPage4: 4,
+      form: {
+        content: ''
+      },
+      visible: false
     }
   },
   created() {
@@ -97,12 +102,21 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`)
     },
+    issue() {
+      this.visible = true
+    },
     fetchData() {
       this.listLoading = true
       getList().then(response => {
         this.list = response.data.items
         this.listLoading = false
       })
+    },
+    confirm() {
+      this.visible = false
+    },
+    cancel() {
+      this.visible = false
     }
   }
 }
