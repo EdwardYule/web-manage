@@ -54,7 +54,7 @@
     </el-table>
     <div class="footer">
       <el-pagination
-        :current-page="currentPage4"
+        :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
@@ -64,8 +64,8 @@
       />
     </div>
     <el-dialog :visible.sync="visible" title="奖励发放">
-      <el-form :model="form">
-        <el-form-item label="口令红包">
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item label="口令红包" prop="content">
           <el-input v-model="form.content" />
         </el-form-item>
       </el-form>
@@ -85,11 +85,20 @@ export default {
     return {
       list: null,
       listLoading: true,
-      currentPage4: 4,
+      currentPage: 4,
       form: {
         content: ''
       },
-      visible: false
+      visible: false,
+      rules: {
+        content: [
+          {
+            required: true,
+            message: '请填写口令红包',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   created() {
@@ -104,6 +113,9 @@ export default {
     },
     issue() {
       this.visible = true
+      this.$nextTick(() => {
+        this.$refs.form.resetFields()
+      })
     },
     fetchData() {
       this.listLoading = true
@@ -113,7 +125,12 @@ export default {
       })
     },
     confirm() {
-      this.visible = false
+      this.$refs.form.validate(valid => {
+        if(valid){
+          this.visible = false
+          console.log('confirm');
+        }
+      })
     },
     cancel() {
       this.visible = false

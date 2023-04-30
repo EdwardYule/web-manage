@@ -55,7 +55,7 @@
     </el-table>
     <div class="footer">
       <el-pagination
-        :current-page="currentPage4"
+        :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
@@ -65,8 +65,8 @@
       />
     </div>
     <el-dialog :visible.sync="visible" title="词条审核">
-      <el-form :model="form">
-        <el-form-item label="拒绝原因">
+      <el-form :model="form" ref="form" :rules="rules">
+        <el-form-item label="拒绝原因" prop="reason">
           <el-input v-model="form.reason" />
         </el-form-item>
       </el-form>
@@ -90,7 +90,16 @@ export default {
       form: {
         reason: ''
       },
-      currentPage4: 4
+      currentPage: 4,
+      rules: {
+        reason: [
+          {
+            required: true,
+            message: '请填写拒绝原因',
+            trigger: 'blur'
+          }
+        ]
+      }
     }
   },
   created() {
@@ -105,12 +114,19 @@ export default {
     },
     audit() {
       this.visible = true
+      this.$nextTick(() => {
+        this.$refs.form.resetFields()
+      })
     },
     pass() {
       this.visible = false
     },
     reject() {
-      this.visible = false
+      this.$refs.form.validate(valid => {
+        if(valid){
+          this.visible = false
+        }
+      })
     },
     fetchData() {
       this.listLoading = true
