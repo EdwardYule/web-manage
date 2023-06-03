@@ -89,7 +89,7 @@
 </template>
 
 <script>
-import { articleGetArticleList } from "@/api/table";
+import { articleGetArticleList, articleAudit } from "@/api/table";
 
 export default {
   data() {
@@ -141,14 +141,19 @@ export default {
     fetchData() {
       this.listLoading = true;
       articleGetArticleList({
-        // articleTypeId: '1',
         page: 0,
         pageSize: 0,
       }).then((response) => {
         this.list = response.data.items;
+      }).finally(() => {
         this.listLoading = false;
       });
     },
+    articleAudit(){
+      articleAudit().then(res => {
+        
+      })
+    }
   },
 };
 </script>

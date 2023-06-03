@@ -135,6 +135,7 @@ export default {
         pageSize: 0,
       }).then((response) => {
         this.list = response.data.items;
+      }).finally(() => {
         this.listLoading = false;
       });
     },
