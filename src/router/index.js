@@ -46,22 +46,16 @@ export const constantRoutes = [
   {
     path: '/',
     component: Layout,
+    meta: { title: '文章管理', icon: 'el-icon-medal' },
     children: [
       {
-        path: 'table1',
+        path: 'audit',
         name: 'Table',
         component: () => import('@/views/table1/index'),
         meta: { title: '词条审核', icon: 'el-icon-medal' }
-      }
-    ]
-  },
-
-  {
-    path: '/',
-    component: Layout,
-    children: [
+      },
       {
-        path: 'table2',
+        path: 'reward',
         name: 'Table',
         component: () => import('@/views/table2/index'),
         meta: { title: '报酬管理', icon: 'table' }

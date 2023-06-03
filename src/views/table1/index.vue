@@ -24,7 +24,12 @@
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="提交时间" width="200px">
+      <el-table-column
+        align="center"
+        prop="created_at"
+        label="提交时间"
+        width="200px"
+      >
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.display_time }}</span>
@@ -40,7 +45,12 @@
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="审核时间" width="200px">
+      <el-table-column
+        align="center"
+        prop="created_at"
+        label="审核时间"
+        width="200px"
+      >
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{ scope.row.display_time }}</span>
@@ -79,7 +89,7 @@
 </template>
 
 <script>
-import { getList } from '@/api/table'
+import { articleGetArticleList } from "@/api/table";
 
 export default {
   data() {
@@ -88,64 +98,68 @@ export default {
       listLoading: true,
       visible: false,
       form: {
-        reason: ''
+        reason: "",
       },
       currentPage: 4,
       rules: {
         reason: [
           {
             required: true,
-            message: '请填写拒绝原因',
-            trigger: 'blur'
-          }
-        ]
-      }
-    }
+            message: "请填写拒绝原因",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
   created() {
-    this.fetchData()
+    this.fetchData();
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      console.log(`当前页: ${val}`);
     },
     audit() {
-      this.visible = true
+      this.visible = true;
       this.$nextTick(() => {
-        this.$refs.form.resetFields()
-      })
+        this.$refs.form.resetFields();
+      });
     },
     pass() {
-      this.visible = false
+      this.visible = false;
     },
     reject() {
-      this.$refs.form.validate(valid => {
-        if(valid){
-          this.visible = false
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.visible = false;
         }
-      })
+      });
     },
     fetchData() {
-      this.listLoading = true
-      getList().then(response => {
-        this.list = response.data.items
-        this.listLoading = false
-      })
-    }
-  }
-}
+      this.listLoading = true;
+      articleGetArticleList({
+        // articleTypeId: '1',
+        page: 0,
+        pageSize: 0,
+      }).then((response) => {
+        this.list = response.data.items;
+        this.listLoading = false;
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
-.operation{
+.operation {
   color: blue;
   cursor: pointer;
   margin-right: 8px;
 }
-.footer{
+.footer {
   text-align: right;
   margin-top: 16px;
 }
