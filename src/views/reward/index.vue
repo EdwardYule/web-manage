@@ -9,7 +9,7 @@
       highlight-current-row
       height="600px"
     >
-      <el-table-column label="词条标题" align="center">
+      <el-table-column label="词条标题" align="center" width="200" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{ scope.row.articleTitle }}</span>
         </template>
@@ -59,11 +59,11 @@
     </el-table>
     <div class="footer">
       <el-pagination
-        :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :current-page="pageBean.page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pageBean.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="pageBean.total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -96,8 +96,8 @@ export default {
       pageBean: {
         page: 1,
         pageSize: 10,
+        total: 0,
       },
-      currentPage: 4,
       form: {
         alipayRedPacketPassword: "",
         articleId: "",
@@ -119,10 +119,13 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.pageBean.pageSize = val;
+      this.pageBean.page = 1;
+      this.fetchData();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.pageBean.page = val;
+      this.fetchData();
     },
     issue(row) {
       this.visible = true;
@@ -135,7 +138,8 @@ export default {
       this.listLoading = true;
       articleGetAuditedArticleList(this.pageBean)
         .then((res) => {
-          const { pages, result } = res;
+          const { row, result } = res;
+          this.pageBean.total = row;
           this.list = result;
         })
         .finally(() => {
@@ -145,12 +149,10 @@ export default {
     confirm() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          articleSendAlipayRedPacketPassword({
-            alipayRedPacketPassword: "",
-            articleId: "",
-          })
-            .then((res) => {
-              console.log(res);
+          articleSendAlipayRedPacketPassword(this.form)
+            .then(() => {
+              this.$message.success('操作成功');
+              this.fetchData();
             })
             .finally(() => {
               this.visible = false;

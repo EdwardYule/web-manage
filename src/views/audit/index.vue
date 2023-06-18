@@ -9,7 +9,7 @@
       highlight-current-row
       height="600px"
     >
-      <el-table-column label="词条标题" align="center">
+      <el-table-column label="词条标题" align="center" width="200" show-overflow-tooltip>
         <template slot-scope="scope">
           <span>{{ scope.row.articleTitle }}</span>
         </template>
@@ -73,11 +73,11 @@
     </el-table>
     <div class="footer">
       <el-pagination
-        :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :current-page="pageBean.page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="pageBean.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="pageBean.total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -109,6 +109,11 @@ export default {
         articleId: "",
         refuseReason: "",
       },
+      pageBean: {
+        page: 1,
+        pageSize: 10,
+        total: 0,
+      },
       currentPage: 4,
       rules: {
         refuseReason: [
@@ -126,10 +131,13 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      this.pageBean.pageSize = val;
+      this.pageBean.page = 1;
+      this.fetchData();
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.pageBean.page = val;
+      this.fetchData();
     },
     audit(row) {
       this.visible = true;
@@ -166,13 +174,11 @@ export default {
     },
     fetchData() {
       this.listLoading = true;
-      articleGetArticleList({
-        page: 1,
-        pageSize: 10,
-      })
+      articleGetArticleList(this.pageBean)
         .then((res) => {
-          const { pages, result } = res;
+          const { row, result } = res;
           this.list = result;
+          this.pageBean.total = row;
         })
         .finally(() => {
           this.listLoading = false;

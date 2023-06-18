@@ -59,23 +59,15 @@ export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
-      } else {
-        callback()
-      }
+      callback()
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
-      } else {
-        callback()
-      }
+      callback()
     }
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: 'admin'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -106,7 +98,11 @@ export default {
       })
     },
     handleLogin() {
-      this.$router.push({ path: '/' })
+      if(this.loginForm.username == 'admin' && this.loginForm.password == 'admin'){
+        this.$router.push({ path: '/audit' })
+      }else{
+        this.$message.error('账号密码错误');
+      }
       // this.$refs.loginForm.validate(valid => {
       //   if (valid) {
       //     this.loading = true
