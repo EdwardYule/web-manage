@@ -50,14 +50,14 @@ export const constantRoutes = [
     children: [
       {
         path: 'audit',
-        name: 'Table',
-        component: () => import('@/views/table1/index'),
+        name: 'Audit',
+        component: () => import('@/views/audit/index'),
         meta: { title: '词条审核', icon: 'el-icon-medal' }
       },
       {
         path: 'reward',
-        name: 'Table',
-        component: () => import('@/views/table2/index'),
+        name: 'Reward',
+        component: () => import('@/views/reward/index'),
         meta: { title: '报酬管理', icon: 'table' }
       }
     ]

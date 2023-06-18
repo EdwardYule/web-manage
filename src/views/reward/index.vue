@@ -14,14 +14,14 @@
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="词条类型" align="center">
+      <el-table-column label="提交人" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="提交人" align="center">
+      <el-table-column label="提交人联系方式" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>邮箱：{{ scope.row.author }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -35,12 +35,12 @@
           <span>{{ scope.row.display_time }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核结果" align="center">
+      <el-table-column label="发放结果" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="审核人" align="center">
+      <el-table-column label="发放人" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.author }}</span>
         </template>
@@ -48,7 +48,7 @@
       <el-table-column
         align="center"
         prop="created_at"
-        label="审核时间"
+        label="发放时间"
         width="200px"
       >
         <template slot-scope="scope">
@@ -58,8 +58,7 @@
       </el-table-column>
       <el-table-column align="center" prop="created_at" label="操作">
         <template slot-scope="scope">
-          <span class="operation" @click="audit(scope.row)">审核</span>
-          <!-- <span @click="detail(scope.row)">详情</span> -->
+          <span class="operation" @click="issue(scope.row)">发放</span>
         </template>
       </el-table-column>
     </el-table>
@@ -74,38 +73,38 @@
         @current-change="handleCurrentChange"
       />
     </div>
-    <el-dialog :visible.sync="visible" title="词条审核">
+    <el-dialog :visible.sync="visible" title="奖励发放">
       <el-form :model="form" ref="form" :rules="rules">
-        <el-form-item label="拒绝原因" prop="reason">
-          <el-input v-model="form.reason" />
+        <el-form-item label="口令红包" prop="content">
+          <el-input v-model="form.content" />
         </el-form-item>
       </el-form>
       <div class="footer">
-        <el-button type="primary" @click="pass">通过</el-button>
-        <el-button @click="reject">拒绝</el-button>
+        <el-button type="primary" @click="confirm">确认</el-button>
+        <el-button @click="cancel">取消</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { articleGetArticleList, articleAudit } from "@/api/table";
+import { articleGetArticleList } from "@/api/table";
 
 export default {
   data() {
     return {
       list: null,
       listLoading: true,
-      visible: false,
-      form: {
-        reason: "",
-      },
       currentPage: 4,
+      form: {
+        content: "",
+      },
+      visible: false,
       rules: {
-        reason: [
+        content: [
           {
             required: true,
-            message: "请填写拒绝原因",
+            message: "请填写口令红包",
             trigger: "blur",
           },
         ],
@@ -122,38 +121,57 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
-    audit() {
+    issue() {
       this.visible = true;
       this.$nextTick(() => {
         this.$refs.form.resetFields();
       });
     },
-    pass() {
-      this.visible = false;
-    },
-    reject() {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          this.visible = false;
-        }
-      });
-    },
     fetchData() {
       this.listLoading = true;
       articleGetArticleList({
-        page: 0,
-        pageSize: 0,
-      }).then((response) => {
-        this.list = response.data.items;
-      }).finally(() => {
-        this.listLoading = false;
+        articleTypeId: '',
+        page: 2,
+        pageSize: 10,
+      })
+        .then((response) => {
+          this.list = response.data.items;
+        })
+        .finally(() => {
+          const res = {
+            pageNum: 0,
+            pageSize: 0,
+            pages: 0,
+            result: [
+              {
+                articleId: "1",
+                articleTitle: "articleTitle",
+                articleTypeName: "articleTypeName",
+                auditResult: 0,
+                auditTime: "",
+                auditor: "",
+                commitTime: "",
+                committer: "",
+              },
+            ],
+            row: 0,
+          };
+          const { result } = res;
+          this.list = result;
+          this.listLoading = false;
+        });
+    },
+    confirm() {
+      this.$refs.form.validate((valid) => {
+        if (valid) {
+          this.visible = false;
+          console.log("confirm");
+        }
       });
     },
-    articleAudit(){
-      articleAudit().then(res => {
-        
-      })
-    }
+    cancel() {
+      this.visible = false;
+    },
   },
 };
 </script>
