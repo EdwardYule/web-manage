@@ -11,52 +11,47 @@
     >
       <el-table-column label="词条标题" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.articleTitle }}</span>
         </template>
       </el-table-column>
       <el-table-column label="提交人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.committer }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="提交人联系方式" align="center">
+      <el-table-column label="提交人联系方式" align="center" width="200">
         <template slot-scope="scope">
-          <span>邮箱：{{ scope.row.author }}</span>
+          <span>邮箱：{{ scope.row.committerEmail }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="created_at"
-        label="提交时间"
-        width="200px"
-      >
+      <el-table-column align="center" label="提交时间" width="200px">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+          <span>{{ $utils.formatTime(scope.row.commitTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发放结果" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{
+            {
+              null: "待发放",
+              1: "已发放",
+            }[scope.row.rewardResult]
+          }}</span>
         </template>
       </el-table-column>
       <el-table-column label="发放人" align="center">
         <template slot-scope="scope">
-          <span>{{ scope.row.author }}</span>
+          <span>{{ scope.row.auditor }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        align="center"
-        prop="created_at"
-        label="发放时间"
-        width="200px"
-      >
+      <el-table-column align="center" label="发放时间" width="200px">
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ scope.row.display_time }}</span>
+          <span>{{ $utils.formatTime(scope.row.auditTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="操作">
+      <el-table-column align="center" label="操作">
         <template slot-scope="scope">
           <span class="operation" @click="issue(scope.row)">发放</span>
         </template>
@@ -75,8 +70,8 @@
     </div>
     <el-dialog :visible.sync="visible" title="奖励发放">
       <el-form :model="form" ref="form" :rules="rules">
-        <el-form-item label="口令红包" prop="content">
-          <el-input v-model="form.content" />
+        <el-form-item label="口令红包" prop="alipayRedPacketPassword">
+          <el-input v-model="form.alipayRedPacketPassword" />
         </el-form-item>
       </el-form>
       <div class="footer">
@@ -88,20 +83,28 @@
 </template>
 
 <script>
-import { articleGetArticleList } from "@/api/table";
+import {
+  articleGetAuditedArticleList,
+  articleSendAlipayRedPacketPassword,
+} from "@/api/table";
 
 export default {
   data() {
     return {
-      list: null,
+      list: [],
       listLoading: true,
+      pageBean: {
+        page: 1,
+        pageSize: 10,
+      },
       currentPage: 4,
       form: {
-        content: "",
+        alipayRedPacketPassword: "",
+        articleId: "",
       },
       visible: false,
       rules: {
-        content: [
+        alipayRedPacketPassword: [
           {
             required: true,
             message: "请填写口令红包",
@@ -121,51 +124,37 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
     },
-    issue() {
+    issue(row) {
       this.visible = true;
       this.$nextTick(() => {
         this.$refs.form.resetFields();
+        this.form.articleId = row.articleId;
       });
     },
     fetchData() {
       this.listLoading = true;
-      articleGetArticleList({
-        articleTypeId: '',
-        page: 2,
-        pageSize: 10,
-      })
-        .then((response) => {
-          this.list = response.data.items;
+      articleGetAuditedArticleList(this.pageBean)
+        .then((res) => {
+          const { pages, result } = res;
+          this.list = result;
         })
         .finally(() => {
-          const res = {
-            pageNum: 0,
-            pageSize: 0,
-            pages: 0,
-            result: [
-              {
-                articleId: "1",
-                articleTitle: "articleTitle",
-                articleTypeName: "articleTypeName",
-                auditResult: 0,
-                auditTime: "",
-                auditor: "",
-                commitTime: "",
-                committer: "",
-              },
-            ],
-            row: 0,
-          };
-          const { result } = res;
-          this.list = result;
           this.listLoading = false;
         });
     },
     confirm() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.visible = false;
-          console.log("confirm");
+          articleSendAlipayRedPacketPassword({
+            alipayRedPacketPassword: "",
+            articleId: "",
+          })
+            .then((res) => {
+              console.log(res);
+            })
+            .finally(() => {
+              this.visible = false;
+            });
         }
       });
     },

@@ -32,7 +32,7 @@
       >
         <template slot-scope="scope">
           <i class="el-icon-time" />
-          <span>{{ formatTime(scope.row.commitTime) }}</span>
+          <span>{{ $utils.formatTime(scope.row.commitTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="审核结果" align="center">
@@ -60,7 +60,7 @@
         <template slot-scope="scope">
           <i class="el-icon-time" />
           <span>{{
-            scope.row.auditTime ? formatTime(scope.row.auditTime) : "无"
+            scope.row.auditTime ? $utils.formatTime(scope.row.auditTime) : "无"
           }}</span>
         </template>
       </el-table-column>
@@ -125,19 +125,6 @@ export default {
     this.fetchData();
   },
   methods: {
-    formatTime(timestamp) {
-      const date = new Date(+timestamp);
-      const fillZero = (str) => (str >= 10 ? str : `0${str}`);
-      const [yyyy, MM, dd, HH, mm, ss] = [
-        date.getFullYear(),
-        date.getMonth() + 1,
-        date.getDate(),
-        date.getHours(),
-        date.getMinutes(),
-        date.getSeconds(),
-      ].map(fillZero);
-      return `${yyyy}-${MM}-${dd} ${HH}:${mm}:${ss}`;
-    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
@@ -145,10 +132,10 @@ export default {
       console.log(`当前页: ${val}`);
     },
     audit(row) {
-      this.form = row;
       this.visible = true;
       this.$nextTick(() => {
         this.$refs.form.resetFields();
+        this.form.articleId = row.articleId;
       });
     },
     pass() {
@@ -183,8 +170,8 @@ export default {
         page: 1,
         pageSize: 10,
       })
-        .then(({ object }) => {
-          const { pageNum, pageSize, pages, result, row } = object;
+        .then((res) => {
+          const { pages, result } = res;
           this.list = result;
         })
         .finally(() => {

@@ -35,7 +35,7 @@ service.interceptors.response.use(
       })
       return Promise.reject(new Error(res.message || 'Error'))
     };
-    return res;
+    return res.object;
   },
   error => {
     console.log('err' + error) // for debug
